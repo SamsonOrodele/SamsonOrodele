@@ -1,0 +1,37 @@
+#Loading packages
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(skimr)
+library(janitor)
+library(here)
+library(modeest)
+
+#Uploading divvy datasets from March 2021 to February 2022
+march_2021 <- read_csv("202103-divvy-tripdata.csv")
+april_2021 <- read_csv("202104-divvy-tripdata.csv")
+may_2021 <- read_csv("202105-divvy-tripdata.csv")
+june_2021 <- read_csv("202106-divvy-tripdata.csv")
+july_2021 <- read_csv("202107-divvy-tripdata.csv")
+august_2021 <- read_csv("202108-divvy-tripdata.csv")
+september_2021 <- read_csv("202109-divvy-tripdata.csv")
+october_2021 <- read_csv("202110-divvy-tripdata.csv")
+november_2021 <- read_csv("202111-divvy-tripdata.csv")
+december_2021 <- read_csv("202112-divvy-tripdata.csv")
+january_2022 <- read_csv("202201-divvy-tripdata.csv")
+february_2022 <- read_csv("202202-divvy-tripdata.csv")
+#combining all datasets into a single table
+yearly_bike_data <- rbind(march_2021, april_2021, may_2021, june_2021, july_2021, august_2021, september_2021, october_2021, november_2021, december_2021, january_2022, february_2022)
+#Removing all "NA" across the table
+yearly_bike_data <- yearly_bike_data[complete.cases(yearly_bike_data), ]
+#To determine and create a new column  "ride length"
+yearly_bike_data <- yearly_bike_data %>% mutate(ride_length = yearly_bike_data$ended_at - yearly_bike_data$started_at)
+#To convert the ride length unit from seconds to period
+yearly_bike_data <- yearly_bike_data %>% mutate(ride_length_time = seconds_to_period(yearly_bike_data$ride_length))
+#To create a new column showing the day of the week
+yearly_bike_data <- yearly_bike_data %>% mutate(day_of_the_week = weekdays(yearly_bike_data$started_at))
+#To separate the "started_at" column into two different column of date and time
+yearly_bike_data <- separate(yearly_bike_data,"started_at",into=c('start_date','start_time'), sep=' ')
+#To separate the "ended_at" column into two different column of date and time
+yearly_bike_data <- separate(yearly_bike_data,"ended_at",into=c('end_date','end_time'), sep=' ')
