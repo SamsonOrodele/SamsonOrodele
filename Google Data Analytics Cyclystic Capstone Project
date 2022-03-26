@@ -21,17 +21,125 @@ november_2021 <- read_csv("202111-divvy-tripdata.csv")
 december_2021 <- read_csv("202112-divvy-tripdata.csv")
 january_2022 <- read_csv("202201-divvy-tripdata.csv")
 february_2022 <- read_csv("202202-divvy-tripdata.csv")
+
 #combining all datasets into a single table
 yearly_bike_data <- rbind(march_2021, april_2021, may_2021, june_2021, july_2021, august_2021, september_2021, october_2021, november_2021, december_2021, january_2022, february_2022)
-#Removing all "NA" across the table
+
+#Removing all "NA" or empty entries across the table
 yearly_bike_data <- yearly_bike_data[complete.cases(yearly_bike_data), ]
-#To determine and create a new column  "ride length"
+
+#To determine and create a new column  "ride length" which is difference between when the ride started between when the ride ended
 yearly_bike_data <- yearly_bike_data %>% mutate(ride_length = yearly_bike_data$ended_at - yearly_bike_data$started_at)
+
 #To convert the ride length unit from seconds to period
 yearly_bike_data <- yearly_bike_data %>% mutate(ride_length_time = seconds_to_period(yearly_bike_data$ride_length))
+
 #To create a new column showing the day of the week
 yearly_bike_data <- yearly_bike_data %>% mutate(day_of_the_week = weekdays(yearly_bike_data$started_at))
+
 #To separate the "started_at" column into two different column of date and time
 yearly_bike_data <- separate(yearly_bike_data,"started_at",into=c('start_date','start_time'), sep=' ')
+
 #To separate the "ended_at" column into two different column of date and time
 yearly_bike_data <- separate(yearly_bike_data,"ended_at",into=c('end_date','end_time'), sep=' ')
+
+#For further cleaning, determine if the ride_length column contains any negative values
+min_ride <- arrange(yearly_bike_data, ride_length)
+head(min_ride)
+
+#To eliminate all negative values in thr ride_length column
+yearly_bike_data <- yearly_bike_data[yearly_bike_data$ride_length > 0, ]
+
+#To confirm the total number of member and casual riders
+table(yearly_bike_data$member_casual)
+
+#Plot a simplepie chart to visualize the total population of member and casual riders
+pie(table(yearly_bike_data$member_casual))
+
+#To eliminate some unnecessary columns from the table
+yearly_bike_data <- yearly_bike_data %>% select(-c(start_station_id, end_station_id, start_lat, start_lng, end_lat, end_lng))
+
+#To visualize the Members and Casual riders using ggplot2
+x <- table(yearly_bike_data$member_casual)
+labels <- c("member", "casual")
+png(file = "member_casual_riders.jpg")
+pie(x, labels, main = "Members and Casual Riders", col = rainbow(length(x)))
+#OR to put percentage labels
+piepercent <- round(100*x/sum(x), 1)
+pie(x, labels = piepercent, main = "Members and Casual Riders", col = rainbow(length(x)))
+
+#To create a new column named "Month" from the start_date column
+yearly_bike_data <- yearly_bike_data %>% 
+mutate(Month = case_when(month(yearly_bike_data$start_date) == 01 ~ "January",
+month(yearly_bike_data$start_date) == 02~"February",
+month(yearly_bike_data$start_date) == 03 ~ "March",
+month(yearly_bike_data$start_date) == 04 ~ "April",
+month(yearly_bike_data$start_date) == 05 ~ "May",
+month(yearly_bike_data$start_date) == 06 ~ "June",
+month(yearly_bike_data$start_date) == 07 ~ "July",
+month(yearly_bike_data$start_date) == 08 ~ "August",
+month(yearly_bike_data$start_date) == 09 ~ "September",
+month(yearly_bike_data$start_date) == 10 ~ "October",
+month(yearly_bike_data$start_date) == 11 ~ "November",
+month(yearly_bike_data$start_date) == 12 ~ "December"))
+
+#To view the frequency of the days of the week
+table(yearly_bike_data$day_of_the_week)
+
+#Plot a bar chart showing the days of the week
+ggplot(data = yearly_bike_data) 
++ geom_bar(mapping = aes(x= day_of_the_week), fill ="violet") 
++ facet_wrap(~member_casual) 
++ theme(panel.spacing = unit(4, "lines"), axis.text.x=element_text(angle = 45, hjust=1))
+
+#To create a column, "Season", where the different months of the year areclassified into seasons
+yearly_bike_data <- yearly_bike_data %>% 
+mutate(Season = case_when(yearly_bike_data$Month == "December"|
+yearly_bike_data$Month =="January"|
+yearly_bike_data$Month =="February" 
+~ "Winter",
+yearly_bike_data$Month == "March"|
+yearly_bike_data$Month =="April"|
+yearly_bike_data$Month =="May" 
+~ "Spring",
+yearly_bike_data$Month == "June"|
+yearly_bike_data$Month =="July"|
+yearly_bike_data$Month =="August" 
+~ "Summer",
+yearly_bike_data$Month == "September"|
+yearly_bike_data$Month =="October"|
+yearly_bike_data$Month =="November" 
+~ "Fall"))
+
+#To plot a graph of seasons face_wraped into Member and Casual riders
+ggplot(data = yearly_bike_data) + geom_bar(mapping = aes(x= Season), fill = "firebrick2") + facet_wrap(~member_casual)
+#OR, alternatively
+ggplot(data = yearly_bike_data) + geom_bar(mapping = aes(x= Season), fill = "firebrick2") 
++ theme(panel.spacing = unit(4, "lines"), axis.text.x=element_text(angle = 45, hjust=1)) + facet_wrap(~member_casual)
+#OR, alternatively
+ggplot(data = yearly_bike_data) + geom_bar(mapping = aes(x= Season), fill = "firebrick2") 
++ theme(panel.spacing = unit(4, "lines"), axis.text.x=element_text(angle = 45, hjust=1))
+
+#To create a summary of average, maximum and minimum of ride table
+ride_summary <- yearly_bike_data %>% group_by(member_casual) %>% 
+summarize(average_ride_length = mean(ride_length), minimum_ride_length = min(ride_length), maximum_ride_length = max(ride_length))
+
+#Viewing and sorting the days of the week and seasons
+sort(table(yearly_bike_data$day_of_the_week))
+names(sort(-table(yearly_bike_data$day_of_the_week)))
+names(sort(-table(yearly_bike_data$day_of_the_week)))[1]
+names(sort(-table(yearly_bike_data$Season)))
+
+#Plotting the above appropriately 
+ggplot(data = yearly_bike_data) + geom_bar(mapping = aes(x = day_of_the_week))
+#AND
+ggplot(yearly_bike_data) + geom_bar(mapping = aes(x = Season, fill = member_casual, color = "rainbow")) 
++ labs(title = "Graphical representation of Member and Casual Riders by Seasons") + theme(legend.position = "bottomright", legend.title = "legend")
+
+#Plotting the Season column into a pie
+ggplot(yearly_bike_data) + geom_bar(mapping = aes(x = Season, fill = "scarlet")) + labs(title = "Member and Casual Riders by Seasons") + coord_polar()
+ggplot(yearly_bike_data) + geom_bar(mapping = aes(x = Season, fill = "scarlet")) + labs(title = "Member and Casual Riders by Seasons") + coord_polar()
+
+
+
+
