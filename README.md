@@ -1,11 +1,14 @@
-- 👋 Hi, My name is Samson Orodele
-- Im currently a mechanical engineer trasitioning into data analytics/data science.
-- 👀 I’m interested in Data Analytics, Data science, Aritificial Intelligence, Machine Learning and Deep Learning.
-- 🌱 I’m currently learning SQL, Spreadsheet, R, and Tableau from the Google Data Analytics Certification on Coursera.
-- 📫 You can reach me on: [Twitter](https://twitter.com/Orozone), [LinkedIn](https://www.linkedin.com/in/samson-orodele-01605019b?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3BuhRnjienSAmlaGEcHZDSAw%3D%3D) and [Gmail](samorodele@gmail.com). 
-You can also check out my portfolio [website](https://sites.google.com/view/orozone/home). 
+Hi there, I’m Samson Orodele! 
+I’m a data enthusiast and programmer with a passion for turning raw data into actionable insights. My work revolves around data science, machine learning, and software development, with a focus on creating tools and projects that solve real-world problems. Whether it’s crunching numbers with Python, exploring datasets, or building efficient code, I love the challenge of making sense of complexity.
+What I’m About
+ Diving deep into data analysis and visualization  
 
-<!---
-SamsonOrodele/SamsonOrodele is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
+ Crafting projects in Python, with a sprinkle of other languages  
+
+ Always learning—currently exploring advanced ML techniques and scalable data pipelines  
+
+ Open to collaboration on data-driven projects or innovative ideas
+
+Check out my repositories below to see what I’ve been working on, including my collection of data science experiments in Data_Science_Projects. Let’s connect if you’re into data, code, or both!
+
+
